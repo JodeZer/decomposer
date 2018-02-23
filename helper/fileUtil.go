@@ -1,7 +1,6 @@
 package helper
 
 import (
-	"io/ioutil"
 	"strings"
 
 	"github.com/JodeZer/decomposer/helper/helperF"
@@ -14,6 +13,7 @@ type FileExplorer struct {
 	ignoreU UniqueMap
 	// target file suffix
 	targetU UniqueMap
+	// dirUtil
 }
 
 func NewFileExplorer(srcDir string) *FileExplorer {
@@ -33,21 +33,22 @@ func (this *FileExplorer) SetTarget(suffix ...string) {
 }
 
 func (this *FileExplorer) Explore() []string {
-	return nil
+	dirSlice := this.MustListDir(this.srcDir)
+	dirSlice.Range(func(dir string) {
+
+	})
 }
 
-func (this *FileExplorer) MustListDirWithDepth(srcDir string) []string {
-	fileInfos, err := ioutil.ReadDir(srcDir)
-	if err != nil {
-		panic(err)
-	}
-	res := make([]string, 0, 5)
-	for _, fi := range fileInfos {
-		if fi.IsDir() {
-			res = append(res, this.MustListDirWithDepth(srcDir+"/"+fi.Name())...)
-		}
-	}
+func (this *FileExplorer) MustListDir(srcDir string) *StringSlice {
+	de := MustConstructDirExplorer(srcDir)
+	res := MakeStringSlice(0, 5)
+	seedsDir := de.GetFullPathDirs(unixHidedDir())
+
+	seedsDir.Range(func(str string) {
+		res.AppendSlice(this.MustListDir(str))
+	})
 	return res
+
 }
 
 // unexported method

@@ -32,6 +32,12 @@ func (ss *StringSlice) Append(strs ...string) {
 	ss.AppendIf(nil, strs...)
 }
 
+func (ss *StringSlice) AppendSlice(slice *StringSlice) {
+	slice.Range(func(str string) {
+		ss.Append(str)
+	})
+}
+
 func (ss *StringSlice) AppendIf(filter helperF.StringFilter, strs ...string) {
 	MakeStringSliceFromRaw(strs).Range(func(str string) {
 		if !filter.Something()(str) {
