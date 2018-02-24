@@ -3,6 +3,7 @@ package helper
 import (
 	"strings"
 
+	"github.com/JodeZer/bag/lib/bag"
 	"github.com/JodeZer/decomposer/helper/helperF"
 )
 
@@ -33,18 +34,19 @@ func (this *FileExplorer) SetTarget(suffix ...string) {
 }
 
 func (this *FileExplorer) Explore() []string {
-	dirSlice := this.MustListDir(this.srcDir)
-	dirSlice.Range(func(dir string) {
+	// dirSlice := this.MustListDir(this.srcDir)
+	// dirSlice.Range(func(dir string) {
 
-	})
+	// })
+	return nil
 }
 
-func (this *FileExplorer) MustListDir(srcDir string) *StringSlice {
+func (this *FileExplorer) MustListDir(srcDir string) *bag.StringSlice {
 	de := MustConstructDirExplorer(srcDir)
-	res := MakeStringSlice(0, 5)
+	res := bag.MakeStringSlice(0, 5)
 	seedsDir := de.GetFullPathDirs(unixHidedDir())
 
-	seedsDir.Range(func(str string) {
+	seedsDir.RangeVal(func(str string) {
 		res.AppendSlice(this.MustListDir(str))
 	})
 	return res

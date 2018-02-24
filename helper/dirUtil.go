@@ -4,24 +4,24 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"github.com/JodeZer/decomposer/helper/helperF"
+	"github.com/JodeZer/bag/lib/bag"
 )
 
 type DirExplorer struct {
 	// prefix at mean time
 	srcDir string
 	// without prefix
-	dirSlice  *StringSlice
-	fileSlice *StringSlice
+	dirSlice  *bag.StringSlice
+	fileSlice *bag.StringSlice
 }
 
-func fullPathComplementer(srcDir string) helperF.StringMender {
+func fullPathComplementer(srcDir string) bag.StringValMapper {
 	return func(str string) string {
 		return srcDir + "/" + str
 	}
 }
 
-func unixHidedDir() helperF.StringFilter {
+func unixHidedDir() bag.StringValFilter {
 	return func(str string) bool {
 		if str[0] == '.' {
 			return true
@@ -34,8 +34,8 @@ func unixHidedDir() helperF.StringFilter {
 func MustConstructDirExplorer(dir string) *DirExplorer {
 	explorer := &DirExplorer{
 		srcDir:    dir,
-		dirSlice:  MakeStringSlice(0, 1),
-		fileSlice: MakeStringSlice(0, 1),
+		dirSlice:  bag.MakeStringSlice(0, 1),
+		fileSlice: bag.MakeStringSlice(0, 1),
 	}
 
 	fis, err := ioutil.ReadDir(dir)
@@ -53,10 +53,10 @@ func MustConstructDirExplorer(dir string) *DirExplorer {
 	return explorer
 }
 
-func (d *DirExplorer) GetFullPathDirs(filter helperF.StringFilter) *StringSlice {
-	return d.dirSlice.GetMendedSlice(fullPathComplementer(d.srcDir)).GetFilteredSlice(filter)
+func (d *DirExplorer) GetFullPathDirs(filter bag.StringValFilter) *bag.StringSlice {
+	return d.dirSlice.MapVal(fullPathComplementer(d.srcDir)).FilterVal(filter)
 }
 
-func (d *DirExplorer) GetFullPathFiles(filter helperF.StringFilter) *StringSlice {
-	return d.fileSlice.GetMendedSlice(fullPathComplementer(d.srcDir)).GetFilteredSlice(filter)
+func (d *DirExplorer) GetFullPathFiles(filter bag.StringValFilter) *bag.StringSlice {
+	return d.fileSlice.MapVal(fullPathComplementer(d.srcDir)).FilterVal(filter)
 }
